@@ -17,19 +17,6 @@ exports.login = asyncHandler(async (req, res) => {
 		res.status(404).json({ message: 'invalid email or password' })
 	}
 })
-exports.getProfile = asyncHandler(async (req, res) => {
-	const user = await User.findById(req.user._id)
-	if (user) {
-		res.json({
-			_id: user._id,
-			name: user.name,
-			email: user.email,
-			isAdmin: user.isAdmin
-		})
-	} else {
-		throw new Error('not authorized, pease try again')
-	}
-})
 
 exports.register = async (req, res) => {
 	const { name, email, password } = req.body
@@ -55,3 +42,26 @@ exports.register = async (req, res) => {
 		}
 	}
 }
+
+exports.updateProfile = asyncHandler(async (req, res) => {
+	const { name, email, password } = req.body
+	const user = await User.findById(req.user._id)
+	if (user) {
+		user.name = name || user.name
+		user.email = email || user.email
+		if (password) {
+			user.password = password || user.password
+		}
+		const updated = await user.save()
+		if (updated) {
+			res.json({
+				_id: updated._id,
+				name: updated.name,
+				email: updated.email,
+				isAdmin: updated.isAdmin
+			})
+		}
+	} else {
+		throw new Error('not authorized, pease try again')
+	}
+})

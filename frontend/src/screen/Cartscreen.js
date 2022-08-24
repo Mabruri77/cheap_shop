@@ -11,7 +11,9 @@ const Cartscreen = () => {
 	const dispatch = useDispatch()
 	const cart = useSelector((state) => state.cart)
 	const { cartItems } = cart
-	const [ searchParams, setSearchParams ] = useSearchParams()
+	const [ searchParams ] = useSearchParams()
+	const userLogin = useSelector((state) => state.userLogin)
+	const { userInfo } = userLogin
 
 	const qty = Number(searchParams.get('qty'))
 	useEffect(
@@ -24,7 +26,11 @@ const Cartscreen = () => {
 		dispatch(removeItem(id))
 	}
 	const checkOutHandler = () => {
-		history('/login?redirect=shipping')
+		if (userInfo) {
+			history('/shipping')
+		} else {
+			history('/login?redirect=shipping')
+		}
 	}
 	return (
 		<Row>
