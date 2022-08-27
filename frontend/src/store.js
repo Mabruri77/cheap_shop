@@ -10,8 +10,18 @@ const cartItemFromStorage = localStorage.getItem('cartItems')
 const userInfoFromStorage = localStorage.getItem('userInfo')
 	? JSON.parse(localStorage.getItem('userInfo'))
 	: null
+const shippingAddressFromStorage = localStorage.getItem('shippingAddress')
+	? JSON.parse(localStorage.getItem('shippingAddress'))
+	: {}
+const paymentMethodFromStorage = localStorage.getItem('paymentMethod')
+	? JSON.parse(localStorage.getItem('paymentMethod'))
+	: null
 const initState = {
-	cart: { cartItems: cartItemFromStorage },
+	cart: {
+		cartItems: cartItemFromStorage,
+		shippingAddress: shippingAddressFromStorage,
+		paymentMethod: paymentMethodFromStorage
+	},
 	userLogin: { userInfo: userInfoFromStorage }
 }
 const middleware = [ thunk ]

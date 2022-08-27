@@ -18,7 +18,9 @@ const Cartscreen = () => {
 	const qty = Number(searchParams.get('qty'))
 	useEffect(
 		() => {
-			dispatch(addToCart(id, qty))
+			if (qty) {
+				dispatch(addToCart(id, qty))
+			}
 		},
 		[ id, qty, dispatch ]
 	)
