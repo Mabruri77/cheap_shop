@@ -5,7 +5,6 @@ import { Link, useParams } from 'react-router-dom'
 import { getOrderDetails, orderPayActions } from '../actions/orderActions'
 import Messages from '../widget/Messages'
 import Loader from '../widget/Loader'
-import axios from 'axios'
 import { PayPalButton } from 'react-paypal-button-v2'
 import { ORDER_PAY_RESET } from '../constant/orderConstant'
 
@@ -17,10 +16,14 @@ const OrderScreen = () => {
 	const { order, error } = orderDetail
 
 	const orderPay = useSelector((state) => state.orderPay)
-	const { loading: loadingPay, success: successPay } = orderPay
+	const { loading: loadingPay } = orderPay
 
 	useEffect(
 		() => {
+			dispatch({
+				type: ORDER_PAY_RESET
+			})
+			dispatch(getOrderDetails(id))
 			const addPayPalScript = () => {
 				const script = document.createElement('script')
 				script.type = 'text/javascript'
@@ -31,20 +34,14 @@ const OrderScreen = () => {
 				}
 				document.body.appendChild(script)
 			}
-			if (!order || successPay) {
-				dispatch({
-					type: ORDER_PAY_RESET
-				})
-				dispatch(getOrderDetails(id))
-			} else if (!order.isPaid) {
-				if (!window.paypal) {
-					addPayPalScript()
-				} else {
-					setSdkReady(true)
-				}
+
+			if (!window.paypal) {
+				addPayPalScript()
+			} else {
+				setSdkReady(true)
 			}
 		},
-		[ dispatch, id, order, successPay ]
+		[ dispatch, id ]
 	)
 	const successPaymentHandler = (paymentResult) => {
 		dispatch(orderPayActions(order._id, paymentResult))

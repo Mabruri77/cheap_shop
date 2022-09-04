@@ -11,6 +11,7 @@ import {
 	USER_UPDATE_SUCCESS
 } from '../constant/userConstant'
 import axios from 'axios'
+import { MY_ORDERLIST_RESET } from '../constant/orderConstant'
 
 export const userLoginAction = (email, password) => async (dispatch, getState) => {
 	try {
@@ -40,6 +41,9 @@ export const userLogoutAction = () => (dispatch) => {
 	localStorage.removeItem('userInfo')
 	dispatch({
 		type: USER_LOGOUT
+	})
+	dispatch({
+		type: MY_ORDERLIST_RESET
 	})
 }
 
@@ -86,7 +90,7 @@ export const updateProfileAction = (dataBody) => async (dispatch, getState) => {
 		const { data } = await axios.put('/api/users/profile', dataBody, config)
 		dispatch({
 			type: USER_LOGIN_SUCCESS,
-			payload: data
+			payload: { ...data, token: userInfo.token }
 		})
 		dispatch({
 			type: USER_UPDATE_SUCCESS

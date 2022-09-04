@@ -60,3 +60,16 @@ exports.updateOrder = asyncHandler(async (req, res) => {
 		console.log(error)
 	}
 })
+exports.getMyOrder = asyncHandler(async (req, res) => {
+	try {
+		const order = await Order.find({ user: req.user._id })
+		if (order) {
+			res.json(order)
+		} else {
+			throw new Error('no Order')
+			return
+		}
+	} catch (error) {
+		console.log(error)
+	}
+})

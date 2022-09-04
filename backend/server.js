@@ -13,6 +13,7 @@ app.use(express.json())
 app.get('/', (req, res) => {
 	res.send('Api is Running')
 })
+
 app.use('/api/products', productRoute)
 app.use('/api/users', userRoute)
 app.use('/api/orders', orderRoute)
