@@ -1,18 +1,43 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Col, ListGroup, Row, Image, Card, Button } from 'react-bootstrap'
-import { useSelector } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
+import { createOrder } from '../actions/orderActions'
 import CheckOutSteps from '../widget/CheckOutSteps'
 import Messages from '../widget/Messages'
 
 const PlaceOrderScreen = () => {
+	const dispatch = useDispatch()
+	const history = useNavigate()
 	const cart = useSelector((state) => state.cart)
 	const { cartItems, shippingAddress, paymentMethod } = cart
 	const itemPrice = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0)
 	const shippingPrice = itemPrice > 100 ? 0 : 100
 	const taxPrice = (Number(itemPrice) * 0.15).toFixed(2)
 	const totalPrice = (Number(itemPrice) + Number(shippingPrice) + Number(taxPrice)).toFixed(2)
-	const orderHandler = () => {}
+	const orderCreate = useSelector((state) => state.orderCreate)
+	const { success, order, error } = orderCreate
+	useEffect(
+		() => {
+			if (success) {
+				history(`/order/${order._id}`)
+			}
+		},
+		[ success, history, order ]
+	)
+	const orderHandler = () => {
+		dispatch(
+			createOrder({
+				orderItems: cartItems,
+				shippingAddress: shippingAddress,
+				paymentMethod: paymentMethod,
+				itemsPrice: itemPrice,
+				taxPrice: taxPrice,
+				shippingPrice: shippingPrice,
+				totalPrice: totalPrice
+			})
+		)
+	}
 	return (
 		<div>
 			<CheckOutSteps step1 step2 step3 step4 />
@@ -89,6 +114,11 @@ const PlaceOrderScreen = () => {
 									<Col> ${totalPrice}</Col>
 								</Row>
 							</ListGroup.Item>
+							{error && (
+								<ListGroup.Item>
+									<Messages variant="danger" text={error} />
+								</ListGroup.Item>
+							)}
 							<ListGroup.Item>
 								<div className="d-grid gap-2">
 									<Button
